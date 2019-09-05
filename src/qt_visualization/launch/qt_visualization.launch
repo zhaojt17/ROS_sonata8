@@ -1,0 +1,4 @@
+<launch>
+    <node name = "mapviewer" pkg = "qt_visualization" type = "visual_main" output = "screen"/>
+    <node name = "simugps" pkg = "simu_gps" type = "simu" output = "screen"/>
+</launch>

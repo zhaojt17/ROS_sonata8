@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=FDfbiVGq0TBTLUScFSLYmH4jhbGbG6G6"></script>
+	<title>清华大学</title>
+</head>
+<body>
+	<div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+	var map = new BMap.Map("allmap");
+	map.addEventListener("click",function(e){
+		alert(e.point.lng + "," + e.point.lat)	
+	})
+	var point = new BMap.Point(116.333509,40.008747); //初始化中心
+	var marker = new BMap.Marker(point);  // 创建标注
+	map.addOverlay(marker);               // 将标注添加到地图中
+	map.centerAndZoom("清华大学", 17);
+	
+	//var p1 = new BMap.Point(116.333509,40.008747);
+	//var p2 = new BMap.Point(116.339024,40.011455);
+	//var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true}});
+	//driving.search(p1, p2);
+
+	function node_display(x,y,r)
+	{
+		var point = new BMap.Point(x,y);
+		var marker = new BMap.Marker(point);  // 创建标注
+		map.addOverlay(marker);               // 将标注添加到地图中
+		map.centerAndZoom(point, 17);
+	}
+
+	function point_to_point(x1,x2,y1,y2)
+	{
+		var p1 = new BMap.Point(x1,x2);
+		var p2 = new BMap.Point(y1,y2);
+
+		var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true}});
+		driving.search(p1, p2);
+	}
+</script>
