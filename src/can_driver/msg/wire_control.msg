@@ -1,0 +1,10 @@
+uint8 pdeSwitch
+float32 accPdeSingal2
+uint8 activeCtrlMode
+uint8 brkMode
+uint8 brkReq
+float32 trgBrkAcc
+uint8 prsReq
+float32 trgPressure
+uint8 strReq
+float32 trgStrAngleOrTorque

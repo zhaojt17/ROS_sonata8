@@ -1,0 +1,5 @@
+<launch>  
+    <node name="changeView" pkg="visualization" type="changeView" />   
+    <node name="rviz" pkg="rviz" type="rviz" args="test.rviz" required="true" /> 
+
+</launch>

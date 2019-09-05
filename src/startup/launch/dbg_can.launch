@@ -1,0 +1,4 @@
+<launch>
+    <node name="can_driver" pkg="can_driver" type="can_driver" output="screen"/>
+    <node name="dbg_can" pkg="dbg" type="dbg_can" output="screen"/>
+</launch>
