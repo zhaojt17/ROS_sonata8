@@ -157,11 +157,11 @@ int main(int argc, char** argv)
             CAN_transmit_count++;
             if (CAN_transmit_count == CAN_TRANSMIT_FREQ)
             {   
-                CAN_transmit_count = 0;
                 CAN_ret = canSend(h0,CAN_net0_txmsg,&CAN_net0_transmit_len);
+                CAN_transmit_count = 0;
                 if (CAN_ret != NTCAN_SUCCESS)
                 {
-                    ROS_INFO("can net0 transimit error");                
+                    ROS_INFO("can net0 transimit error");
                 }
             }
             ros::spinOnce();     
