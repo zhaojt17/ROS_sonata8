@@ -176,7 +176,6 @@ class DQNNetWork:
         import matplotlib.pyplot as plt
         if length is None:
             plt.plot(np.arange(len(self.cost_his)), self.cost_his)
-
         else:
             length_plot = min(len(self.cost_his), length)
             plt.plot(np.arange(length_plot), self.cost_his[-length_plot:])
