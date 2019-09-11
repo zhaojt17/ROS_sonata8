@@ -24,9 +24,8 @@ void CAN_ID238::Compress(uint8_t data_activeCtrlMode ,uint8_t data_brkReq ,float
                         uint8_t data_strReq,uint8_t data_prsReq,float data_trgPressure,float data_trgStrAngleOrTorque)
 {
     int i = 0;
-    float ftemp = 0;
-    uint16_t u16temp = 0;
-    CAN_id = 0x238; 
+    uint16_t temp = 0;
+    CAN_id = 0x238;
     activeCtrlMode = data_activeCtrlMode;
     brkReq = data_brkReq;
     trgBrkAcc = data_trgBrkAcc;
@@ -35,22 +34,14 @@ void CAN_ID238::Compress(uint8_t data_activeCtrlMode ,uint8_t data_brkReq ,float
     trgPressure = data_trgPressure;
     trgStrAngleOrTorque = data_trgStrAngleOrTorque;
     for(i=0; i<8; i++) { CAN_data[i] = 0;}
-    CAN_data[0] |= prsReq;    
-    CAN_data[0] |= (brkReq << 3);
-    CAN_data[0] |= (activeCtrlMode << 6);
+    CAN_data[0] |= (prsReq&0x01);
+    CAN_data[0] |= ((strReq&0x01) << 1);
+    CAN_data[0] |= ((brkReq&0x01)  << 3);
+    CAN_data[0] |= ((activeCtrlMode&0x01) << 6);
     CAN_data[5] = (uint8_t)(trgBrkAcc / trgBrkAcc_Ratio);
-    if (trgStrAngleOrTorque >= -steerWheelAngle_limit && trgStrAngleOrTorque <= steerWheelAngle_limit)
-    {
-    CAN_data[0] |= (strReq << 1);
-    ftemp = trgStrAngleOrTorque / trgStrAngleOrTorque_Ratio + 0x8000;
-    u16temp = (uint16_t)(ftemp);
-    CAN_data[6] = (uint8_t)((u16temp >> 8) & 0xFF);
-    CAN_data[7] = (uint8_t)(u16temp & 0xFF);
-    }
-    else {
-    CAN_data[0] |= (0x00 << 1);
-    ROS_INFO("ID238: data is out of limit");
-    }
+    temp = (uint16_t)((trgStrAngleOrTorque -  trgStrAngleOrTorque_offset) / trgStrAngleOrTorque_Ratio+0x8000);
+    CAN_data[6] = (uint8_t)((temp>>8)&0xFF);
+    CAN_data[7] = (uint8_t)(temp&0xFF);
     CAN_data[3] = (uint8_t)((uint16_t)(trgPressure / trgPressure_Ratio) & 0xFF);
     CAN_data[2] = ((uint8_t)(((uint16_t)(trgPressure / trgPressure_Ratio)) >> 8)) & 0x03;
 
@@ -62,16 +53,9 @@ void CAN_ID31A::Compress(uint8_t data_pdeSwitch,float data_accPdeSingal2)
     accPdeSingal2 = data_accPdeSingal2;
     pdeSwitch = data_pdeSwitch;
     CAN_id = 0x31A;
-    for(i=0;i<8;i++) {CAN_data[i] = 0;}
-    if (pdeSwitch >= -accPdeSingal2_limit && pdeSwitch <= accPdeSingal2_limit)
-    {
+    for(i=0;i<8;i++) CAN_data[i] = 0;
     CAN_data[0] |= data_pdeSwitch;
-    CAN_data[1] = (uint8_t)(data_accPdeSingal2/accPdeSingal2_Ratio);
-    }
-    else {
-    CAN_data[0] |= 0x00; 
-    ROS_INFO("ID31A: data is out of limit");
-    }
+    CAN_data[1] = uint8_t(data_accPdeSingal2/accPdeSingal2_Ratio);
 }
 
 void CAN_ID386::Extract(void)
@@ -83,14 +67,14 @@ void CAN_ID386::Extract(void)
 }
 
 void CAN_ID381::Extract(void)
-{   
-    if (CAN_data[4] < 0x80)
+{
+    if (CAN_data[4] < 128)
     {
-        steerWheelAngle = (CAN_data[4] << 8 + CAN_data[3])*steerWheelAngle_Ratio;
+        steerWheelAngle = (CAN_data[4] *256 + CAN_data[3])*steerWheelAngle_Ratio - steerWheelAngle_offset;
     }
-    else if (CAN_data[4] > 0x80)
+    else if (CAN_data[4] > 128)
     {
-        steerWheelAngle = ((CAN_data[4] << 8 + CAN_data[3]) - 256*256)*steerWheelAngle_Ratio;
+        steerWheelAngle = ((CAN_data[4] *256 + CAN_data[3]) - 65535)*steerWheelAngle_Ratio - steerWheelAngle_offset;
     }
 }
 
@@ -98,9 +82,9 @@ void CAN_ID381::Extract(void)
 void CAN_ID541::Extract(void)
 {
     brakeFlag = (CAN_data[7] >> 4) & 0x01;
-} 
+}
 
-void CAN_ID111::Extract(void) 
+void CAN_ID111::Extract(void)
 {
     gear = CAN_data[1] & 0x0F;
     gearShiftFlag = (CAN_data[2]>>3) & 0x01;
@@ -112,7 +96,7 @@ void CAN_ID2B0::Extract(void)
 }
 
 void CAN_ID153::Compress(float data_torqueReduceFast,float data_torqueReduceSlow)
-{    
+{
     torqueReduceFast = data_torqueReduceFast;
     torqueReduceSlow = data_torqueReduceSlow;
     CAN_data[2] = (uint8_t)(torqueReduceFast/torqueReduceFast_Ratio);
