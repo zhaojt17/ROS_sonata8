@@ -31,14 +31,15 @@ int can_start(){
         ret = canSetBaudrate(h0,NTCAN_BAUD_500);
         for (i= idstart;i<idend;i++)
         {
-         ret = canIdAdd(h0,i);   
-        }        
+         ret = canIdAdd(h0,i);
+        }
     }
     return ret;
 }
 
 void wire_controlCallback(const can_driver::wire_control& msg)
 {
+
     if (msg.brkMode == acc_brkMode)
     {
         CAN_ID238_obj.Compress(msg.activeCtrlMode,msg.brkReq,msg.trgBrkAcc,msg.strReq,0,msg.trgPressure,msg.trgStrAngleOrTorque);
@@ -50,46 +51,25 @@ void wire_controlCallback(const can_driver::wire_control& msg)
     }
     CAN_ID31A_obj.Compress(msg.pdeSwitch,msg.accPdeSingal2);
     CAN_net0_txmsg[CAN_net0_transmit_len].id = CAN_ID238_obj.CAN_id;
+    CAN_net0_txmsg[CAN_net0_transmit_len].len = 8;
     CAN_ID238_obj.ReadCANData(CAN_net0_txmsg[CAN_net0_transmit_len].data);
-    ROS_INFO("CAN_ID%03X,%2X,%2X,%2X,%2X,%2X,%2X,%2X,%2X",CAN_net0_txmsg[CAN_net0_transmit_len].id,CAN_net0_txmsg[CAN_net0_transmit_len].data[0],CAN_net0_txmsg[CAN_net0_transmit_len].data[1],CAN_net0_txmsg[CAN_net0_transmit_len].data[2],CAN_net0_txmsg[CAN_net0_transmit_len].data[3],CAN_net0_txmsg[CAN_net0_transmit_len].data[4],CAN_net0_txmsg[CAN_net0_transmit_len].data[5],CAN_net0_txmsg[CAN_net0_transmit_len].data[6],CAN_net0_txmsg[CAN_net0_transmit_len].data[7]);
+    //ROS_INFO("CAN_ID%03X,%2X,%2X,%2X,%2X,%2X,%2X,%2X,%2X",CAN_net0_txmsg[CAN_net0_transmit_len].id,CAN_net0_txmsg[CAN_net0_transmit_len].data[0],CAN_net0_txmsg[CAN_net0_transmit_len].data[1],CAN_net0_txmsg[CAN_net0_transmit_len].data[2],CAN_net0_txmsg[CAN_net0_transmit_len].data[3],CAN_net0_txmsg[CAN_net0_transmit_len].data[4],CAN_net0_txmsg[CAN_net0_transmit_len].data[5],CAN_net0_txmsg[CAN_net0_transmit_len].data[6],CAN_net0_txmsg[CAN_net0_transmit_len].data[7]);
     CAN_net0_transmit_len++;
     CAN_net0_txmsg[CAN_net0_transmit_len].id = CAN_ID31A_obj.CAN_id;
+    CAN_net0_txmsg[CAN_net0_transmit_len].len = 8;
     CAN_ID31A_obj.ReadCANData(CAN_net0_txmsg[CAN_net0_transmit_len].data);
-    ROS_INFO("CAN_ID%03X,%2X,%2X,%2X,%2X,%2X,%2X,%2X,%2X",CAN_net0_txmsg[CAN_net0_transmit_len].id,CAN_net0_txmsg[CAN_net0_transmit_len].data[0],CAN_net0_txmsg[CAN_net0_transmit_len].data[1],CAN_net0_txmsg[CAN_net0_transmit_len].data[2],CAN_net0_txmsg[CAN_net0_transmit_len].data[3],CAN_net0_txmsg[CAN_net0_transmit_len].data[4],CAN_net0_txmsg[CAN_net0_transmit_len].data[5],CAN_net0_txmsg[CAN_net0_transmit_len].data[6],CAN_net0_txmsg[CAN_net0_transmit_len].data[7]);
+    //ROS_INFO("CAN_ID%03X,%2X,%2X,%2X,%2X,%2X,%2X,%2X,%2X",CAN_net0_txmsg[CAN_net0_transmit_len].id,CAN_net0_txmsg[CAN_net0_transmit_len].data[0],CAN_net0_txmsg[CAN_net0_transmit_len].data[1],CAN_net0_txmsg[CAN_net0_transmit_len].data[2],CAN_net0_txmsg[CAN_net0_transmit_len].data[3],CAN_net0_txmsg[CAN_net0_transmit_len].data[4],CAN_net0_txmsg[CAN_net0_transmit_len].data[5],CAN_net0_txmsg[CAN_net0_transmit_len].data[6],CAN_net0_txmsg[CAN_net0_transmit_len].data[7]);
     CAN_net0_transmit_len++;
 }
-
-// void can_transmitCallback(const can_driver::can_transmit&  msg)
-// {
-//     int i = 0; 
-//     NTCAN_RESULT ret = 0;
-//     txmsg[0].id = msg.frameId;
-//     txmsg[0].len = 8;
-//     for (i=0;i<txmsg[0].len;i++)
-//     {
-        
-//         txmsg[0].data[i]= msg.data[i];
-       
-//     }
-//     ret = canSend(h0,txmsg,&transmit_length);
-//     if (ret == NTCAN_SUCCESS)
-//     {
-//         //ROS_INFO("I transimit :[%u]",msg.frameId);
-//     }
-//     else 
-//     {
-//         ROS_INFO("transimit error");
-//     }
-// }
 
 int main(int argc, char** argv)
 {
 
     uint8_t i = 0;
     uint8_t j = 0;
-    NTCAN_RESULT CAN_ret = 0;  
+    NTCAN_RESULT CAN_ret = 0;
     Status CAN_Status = stop;
-    ros::init(argc,argv,"can_driver");   
+    ros::init(argc,argv,"can_driver");
     ros::NodeHandle n;
     //ros::Publisher chatter_pub = n.advertise<can_driver::can_receive>("can_receive",1000);
 
@@ -99,7 +79,7 @@ int main(int argc, char** argv)
     {
         ROS_INFO("ERROR");
     }
-    else 
+    else
     {
         ROS_INFO("OK");
         CAN_Status = start;
@@ -108,16 +88,16 @@ int main(int argc, char** argv)
   if (CAN_Status == start)
         {
         ROS_INFO("start");
-        ros::Subscriber sub = n.subscribe("wire_control",1000,wire_controlCallback);    // set topic
         ros::Rate loop_rate(1000);     // set loop rate
+        ros::Subscriber sub = n.subscribe("wire_control",1000,wire_controlCallback);    // set topic
 /********************  main loop  ************************/
         while (CAN_Status == start && ros::ok())
             {
 
-/**************************************receive*********************************************/ 
+/**************************************receive*********************************************/
             CAN_receive_count++;
-            if (CAN_receive_count == CAN_RECEIVE_FREQ)
-            {   
+            if (CAN_receive_count >= CAN_RECEIVE_FREQ)
+            {
                 CAN_receive_count = 0;
                 CAN_net0_receive_len = MAX_RX_MSG_CNT;
                 CAN_ret = canTake(h0, CAN_net0_rxmsg, &CAN_net0_receive_len);
@@ -133,45 +113,54 @@ int main(int argc, char** argv)
                                         CAN_ID386_obj.GetCANData(CAN_net0_rxmsg[i].data);
                                         CAN_ID386_obj.Extract();
                                         ROS_INFO("Wheel Speed FL: %f",CAN_ID386_obj.wheelSpeed_FL);
+                                        ROS_INFO("CAN_ID386,%2X,%2X,%2X,%2X,%2X,%2X,%2X,%2X",CAN_ID386_obj.CAN_data[0],CAN_ID386_obj.CAN_data[1],CAN_ID386_obj.CAN_data[2],CAN_ID386_obj.CAN_data[3],CAN_ID386_obj.CAN_data[4],CAN_ID386_obj.CAN_data[5],CAN_ID386_obj.CAN_data[6],CAN_ID386_obj.CAN_data[7]);
                                     break;
                                 }
                                 case 0x381:{
                                         CAN_ID381_obj.GetCANData(CAN_net0_rxmsg[i].data);
                                         CAN_ID381_obj.Extract();
+                                        //ROS_INFO("CAN_ID%03X,%2X,%2X,%2X,%2X,%2X,%2X,%2X,%2X",CAN_ID381_obj.CAN_id,CAN_ID381_obj.CAN_data[0],CAN_ID381_obj.CAN_data[1],CAN_ID381_obj.CAN_data[2],CAN_ID381_obj.CAN_data[3],CAN_ID381_obj.CAN_data[4],CAN_ID381_obj.CAN_data[5],CAN_ID381_obj.CAN_data[6],CAN_ID381_obj.CAN_data[7]);
                                         ROS_INFO("steer Wheel Angle: %f",CAN_ID381_obj.steerWheelAngle);
+                                    break;
                                 }
                                 default:break;
 
                             }
-                    
+
                         }
                         CAN_net0_receive_len = 0;
-                        ROS_INFO("%d",CAN_receive_len_all);                     
+                        //ROS_INFO("%d",CAN_receive_len_all);
                     }
                 }
                 else{
-                    ROS_INFO("can net0 receive error"); 
+                    ROS_INFO("can net0 receive error");
                 }
             }
-/*************************************transimit*********************************************/ 
+/*************************************transimit*********************************************/
             CAN_transmit_count++;
-            if (CAN_transmit_count == CAN_TRANSMIT_FREQ)
+            if (CAN_transmit_count >= CAN_TRANSMIT_FREQ && CAN_net0_transmit_len!=0)
             {
-                CAN_ret = canSend(h0,CAN_net0_txmsg,&CAN_net0_transmit_len);
+
                 CAN_transmit_count = 0;
+                CAN_ret = canSend(h0,CAN_net0_txmsg,&CAN_net0_transmit_len);
                 if (CAN_ret != NTCAN_SUCCESS)
                 {
                     ROS_INFO("can net0 transimit error");
                 }
+                else {
+                    //ROS_INFO("can net0 transimit ok");
+                }
+                CAN_net0_transmit_len = 0;
+
             }
-            ros::spinOnce();     
-            loop_rate.sleep(); 
+            ros::spinOnce();
+            loop_rate.sleep();
             }
-        
+
         }
 /********************  end of main loop  ***************************/
 
-/********************  if start can error  ************************/        
+/********************  if start can error  ************************/
     else{
             ROS_INFO("CAN net0 Something wrong");
             ros::spin();
@@ -179,7 +168,6 @@ int main(int argc, char** argv)
     return 0;
 
 }
-
 
 
 
