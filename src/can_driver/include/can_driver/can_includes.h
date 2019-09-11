@@ -34,7 +34,6 @@ enum Status {start = 0 , stop = 1 ,error = 2};
 
 
 /***********pcie esd-can 402  funtion  start *****************/
-
 //static int8_t* get_error_str(int8_t *str_buf, NTCAN_RESULT ntstatus);
 
 

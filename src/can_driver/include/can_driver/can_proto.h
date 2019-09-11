@@ -5,36 +5,37 @@
 #include "ros/ros.h"
 
 
-/****************ID238_Ratio**************/
+/****************ID238_parameter**************/
 #define trgBrkAcc_Ratio 0.1
 #define trgStrAngleOrTorque_Ratio 0.1
+#define trgStrAngleOrTorque_offset -20
 #define trgPressure_Ratio 0.01
 
-/****************ID31A_Ratio**************/
+/****************ID31A_parameter**************/
 #define  accPdeSingal2_Ratio 0.02
-#define  accPdeSingal2_limit 1
-/****************ID386_Ratio*************/
+
+/****************ID386_parameter*************/
 #define wheelSpeed_Ratio 0.3137
 
-/****************ID381_Ratio**************/
+/****************ID381_parameter**************/
 #define steerWheelAngle_Ratio 0.1
-#define steerWheelAngle_limit 540
+#define steerWheelAngle_offset 20
 
-/****************ID111_Ratio**************/
+/****************ID111_parameter**************/
 #define gear_P 0x00
 #define gear_R 0x07
 #define gear_N 0x06
 #define gear_D 0x05
 
-/****************ID2B0_Ratio**************/
+/****************ID2B0_parameter**************/
 #define steerWheelSpeed_Ratio 0.01
 
-/****************ID153_Ratio*************/
+/****************ID153_parameter*************/
 #define torqueReduceFast_Ratio 1
 #define torqueReduceSlow_Ratio 1
 
 class CAN_PROTO{
-    
+
     public:
     uint32_t timeStamp;
     uint32_t CAN_id;
@@ -51,9 +52,9 @@ class CAN_PROTO{
 
 
 class CAN_ID238 : public CAN_PROTO{
-    
-    public: 
-        
+
+    public:
+
     uint8_t activeCtrlMode;
     uint8_t brkReq;
     float trgBrkAcc;
@@ -62,14 +63,14 @@ class CAN_ID238 : public CAN_PROTO{
     float trgPressure;
     float trgStrAngleOrTorque;
 
-    void Compress(uint8_t data_activeCtrlMode ,uint8_t data_brkReq ,float data_trgBrkAcc, 
-                        uint8_t data_strReq,uint8_t data_prsReq,float data_trgPressure,float data_trgStrAngleOrTorque);  
+    void Compress(uint8_t data_activeCtrlMode ,uint8_t data_brkReq ,float data_trgBrkAcc,
+                        uint8_t data_strReq,uint8_t data_prsReq,float data_trgPressure,float data_trgStrAngleOrTorque);
 };
 
 class CAN_ID31A : public CAN_PROTO{
-    
-    public: 
-    
+
+    public:
+
     uint8_t pdeSwitch;
     float accPdeSingal2;
 
@@ -79,7 +80,7 @@ class CAN_ID31A : public CAN_PROTO{
 
 class CAN_ID386 : public CAN_PROTO{
 
-    public: 
+    public:
 
     float wheelSpeed_FL;
     float wheelSpeed_FR;
@@ -92,7 +93,7 @@ class CAN_ID386 : public CAN_PROTO{
 
 class CAN_ID381 : public CAN_PROTO{
 
-    public: 
+    public:
 
     float steerWheelAngle;
 
@@ -111,7 +112,7 @@ class CAN_ID541 : public CAN_PROTO{
 
 class CAN_ID111 : public CAN_PROTO{
 
-    public: 
+    public:
 
     uint8_t gear;
     uint8_t gearShiftFlag;
@@ -123,7 +124,7 @@ class CAN_ID111 : public CAN_PROTO{
 
 class CAN_ID2B0 : public CAN_PROTO{
 
-    public: 
+    public:
 
     float steerWheelSpeed;
 
@@ -146,8 +147,7 @@ class CAN_ID153 : public CAN_PROTO{
 };
 
 
-#endif 
-
+#endif
 
 
 
